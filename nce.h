@@ -13,19 +13,50 @@ void ncersize(int sig);
 void nceaction();
 
 /**
- * Internals
+ * Prototypes
  */
 
 void nceinit();
 void ncego();
 
+/**
+ * Globals
+ */
+
+/* ascii chars */
 #define NUMKEYS 0xFF
-short Keys[NUMKEYS] = { 0 };
-#define NUMSKEYS 4
-int SKeys[NUMSKEYS] = { 0 };
+/* which Keys are pressed */
+bool Keys[NUMKEYS] = { 0 };
+
+/* special chars */
+#define NUMSKEYS 6
+/* use SKeyIDs to index into SKeyLookup */
+enum SKeyIDs {
+    KDOWN,
+    KUP,
+    KLEFT,
+    KRIGHT,
+    KBACKSPACE,
+    KENTER,
+};
+/* the characters getch() returns */
+int SKeyLookup[NUMSKEYS] = {
+    KEY_DOWN,
+    KEY_UP,
+    KEY_LEFT,
+    KEY_RIGHT,
+    KEY_BACKSPACE,
+    KEY_ENTER,
+};
+/* which SKeys are pressed */
+bool SKeys[NUMSKEYS] = { false };
+
+/* screen width and height */
 int SWidth, SHeight;
 
-
+/**
+ * Definitions
+ */
 
 void nceinit()
 {
@@ -50,23 +81,18 @@ void ncego()
         if ((ch = getch()) == ERR) {
             /* pass */
         } else {
-            switch (ch) {
-            case KEY_DOWN:
-            case KEY_UP:
-            case KEY_LEFT:
-            case KEY_RIGHT:
-                break;
-            }
-
             /* set key to whether it was pressed or not */
             for (i = 0; i < NUMKEYS; i++)
                 Keys[i] = (ch == i);
             
-            for (i = 0; i < NUMSKEYS; i++)
-                SKeys[i] = (ch - KEY_DOWN) == i;
+            for (i = 0; i < NUMSKEYS; i++) {
+                /* this is broken */
+                SKeys[i] = (ch == i);
+            }
         }
 
-        if (Keys[27]) /* ESCAPE */
+        /* ESCAPE */
+        if (Keys[27])
             goto Exit;
 
         nceaction();
