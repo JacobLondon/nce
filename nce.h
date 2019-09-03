@@ -21,6 +21,8 @@ void ncego();
 
 #define NUMKEYS 0xFF
 short Keys[NUMKEYS] = { 0 };
+#define NUMSKEYS 4
+int SKeys[NUMSKEYS] = { 0 };
 int SWidth, SHeight;
 
 
@@ -42,13 +44,26 @@ void nceinit()
 void ncego()
 {
     int ch = 0;
+    short i = 0;
+
     for (;;) {
         if ((ch = getch()) == ERR) {
             /* pass */
         } else {
+            switch (ch) {
+            case KEY_DOWN:
+            case KEY_UP:
+            case KEY_LEFT:
+            case KEY_RIGHT:
+                break;
+            }
+
             /* set key to whether it was pressed or not */
-            for (short i = 0; i < NUMKEYS; i++)
+            for (i = 0; i < NUMKEYS; i++)
                 Keys[i] = (ch == i);
+            
+            for (i = 0; i < NUMSKEYS; i++)
+                SKeys[i] = (ch - KEY_DOWN) == i;
         }
 
         if (Keys[27]) /* ESCAPE */
