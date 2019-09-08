@@ -7,17 +7,17 @@
  * User defined
  */
 
-/* NCE Resize handler */
-void ncersize(int sig);
-/* NCE Action function */
-void nceaction();
+/* user overide */
+void nce_onrsize(int sig);
+void nce_onstartup();
+void nce_onupdate();
 
 /**
  * Prototypes
  */
 
-void nceinit();
-void ncego();
+void nce_start();
+void nce_go();
 
 /**
  * Globals
@@ -27,17 +27,18 @@ void ncego();
 #define NUMKEYS 0xFF
 /* which Keys are pressed */
 bool Keys[NUMKEYS] = { 0 };
+const int KEY_ESCAPE = 27;
 
 /* special chars */
 #define NUMSKEYS 6
 /* use SKeyIDs to index into SKeyLookup */
 enum SKeyIDs {
-    KDOWN,
-    KUP,
-    KLEFT,
-    KRIGHT,
-    KBACKSPACE,
-    KENTER,
+    SKEY_DOWN,
+    SKEY_UP,
+    SKEY_LEFT,
+    SKEY_RIGHT,
+    SKEY_BACKSPACE,
+    SKEY_ENTER,
 };
 /* the characters getch() returns */
 int SKeyLookup[NUMSKEYS] = {
@@ -58,21 +59,22 @@ int SWidth, SHeight;
  * Definitions
  */
 
-void nceinit()
+void nce_start()
 {
     initscr();
     clear();
     cbreak();
     noecho();
     getmaxyx(stdscr, SHeight, SWidth);
-    signal(SIGWINCH, &ncersize);
+    signal(SIGWINCH, &nce_onrsize);
     nodelay(stdscr, true);
     start_color();
 
-    ncego();
+    nce_onstartup();
+    nce_go();
 }
 
-void ncego()
+void nce_go()
 {
     int ch = 0;
     short i = 0;
@@ -80,22 +82,21 @@ void ncego()
     for (;;) {
         if ((ch = getch()) == ERR) {
             /* pass */
-        } else {
+        }
+        else {
             /* set key to whether it was pressed or not */
             for (i = 0; i < NUMKEYS; i++)
                 Keys[i] = (ch == i);
             
-            for (i = 0; i < NUMSKEYS; i++) {
-                /* this is broken */
-                SKeys[i] = (ch == i);
-            }
+            for (i = 0; i < NUMSKEYS; i++)
+                SKeys[i] = (ch == SKeyLookup[i]);
         }
 
         /* ESCAPE */
-        if (Keys[27])
+        if (Keys[KEY_ESCAPE])
             goto Exit;
 
-        nceaction();
+        nce_onupdate();
     }
 
 Exit:
