@@ -1,23 +1,23 @@
 #include "nce.h"
 
-void nce_onrsize(int sig)
+void nce_resize(int sig)
 {
     getmaxyx(stdscr, SHeight, SWidth);
 }
 
-void nce_onstartup()
+void nce_startup()
 {
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_RED, COLOR_BLACK);
 }
 
-void nce_onupdate()
+void nce_update()
 {
     for (int i = 0; i < SHeight; i++) {
         for (int j = 0; j < SWidth; j++) {
-            swrite(chr, 'X', j, i, A_NORMAL);
+            swrite("X", j, i);
         }
-        swrite(str, "SUPER", 0, i, A_NORMAL);
+        swrite("SUPER", 0, i);
     }
 
     if (Keys['a']) {
@@ -28,6 +28,6 @@ void nce_onupdate()
 
 int main()
 {
-    nce_start();
+    nce_init();
     return 0;
 }

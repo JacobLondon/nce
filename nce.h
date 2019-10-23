@@ -8,16 +8,18 @@
  */
 
 /* user overide */
-void nce_onrsize(int sig);
-void nce_onstartup();
-void nce_onupdate();
+void nce_resize(int sig);
+void nce_startup();
+void nce_update();
 
 /**
  * Prototypes
  */
 
-void nce_start();
-void nce_go();
+void nce_init();
+void nce_run();
+void gotoxy(int x, int y);
+void swrite(char *s, int x, int y);
 
 /**
  * Globals
@@ -59,22 +61,22 @@ int SWidth, SHeight;
  * Definitions
  */
 
-void nce_start()
+void nce_init()
 {
     initscr();
     clear();
     cbreak();
     noecho();
     getmaxyx(stdscr, SHeight, SWidth);
-    signal(SIGWINCH, &nce_onrsize);
+    signal(SIGWINCH, &nce_resize);
     nodelay(stdscr, true);
     start_color();
 
-    nce_onstartup();
-    nce_go();
+    nce_startup();
+    nce_run();
 }
 
-void nce_go()
+void nce_run()
 {
     int ch = 0;
     short i = 0;
@@ -96,27 +98,21 @@ void nce_go()
         if (Keys[KEY_ESCAPE])
             goto Exit;
 
-        nce_onupdate();
+        nce_update();
     }
 
 Exit:
     endwin();
 }
 
-void _chrwrite(char ch, int x, int y)
+void gotoxy(int x, int y)
 {
-    mvaddch(y, x, ch);
+    move(y, x);
 }
 
-void _strwrite(char *s, int x, int y)
+void swrite(char *s, int x, int y)
 {
     move(y, x);
     addstr(s);
 }
 
-/* Usage: writeattr(chr, 'a', 5, 10, A_BOLD); */
-#define swrite(type, v, x, y, attr) do { \
-    attron((attr)); \
-    _ ## type ## write((v), (x), (y)); \
-    attroff((attr)); \
-} while (0)
