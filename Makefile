@@ -1,12 +1,18 @@
 CC=gcc
 TARGET=nce
-FILES=main.c
-LINK=-lncurses
-CFLAGS=-Wall
+OBJ_FILES=nce.o
+CFLAGS=-std=c11 -O2 -Wall -lncurses
 
-.PHONY: all clean
+.PHONY: clean
 
-all:
-	$(CC) -o $(TARGET) $(FILES) $(LINK) $(CFLAGS)
+$(TARGET): main.o nce.a
+	$(CC) -o $@ $^ $(CFLAGS)
+
+nce.a: $(OBJ_FILES)
+	ar rcs $@ $^
+
+main.o: main.c
+	$(CC) -c $< -o $@ $(CFLAGS)
+
 clean:
-	rm $(TARGET)
+	rm -rf $(TARGET) $(OBJ_FILES) *.o *.a
