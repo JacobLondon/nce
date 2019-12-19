@@ -18,8 +18,9 @@ void nce_update();
 
 void nce_init();
 void nce_run();
-void gotoxy(int x, int y);
-void swrite(char *s, int x, int y);
+void nce_goto(int x, int y);
+void nce_write(char *s, int x, int y);
+bool nce_keypressed(bool key[], unsigned index);
 
 /**
  * Globals
@@ -105,14 +106,22 @@ Exit:
     endwin();
 }
 
-void gotoxy(int x, int y)
+void nce_goto(int x, int y)
 {
     move(y, x);
 }
 
-void swrite(char *s, int x, int y)
+void nce_write(char *s, int x, int y)
 {
     move(y, x);
     addstr(s);
 }
 
+bool nce_keypressed(bool key[], unsigned index)
+{
+    if (key[index]) {
+        key[index] = false;
+        return true;
+    }
+    return false;
+}

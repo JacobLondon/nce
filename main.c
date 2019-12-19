@@ -15,9 +15,9 @@ void nce_update()
 {
     for (int i = 0; i < SHeight; i++) {
         for (int j = 0; j < SWidth; j++) {
-            swrite("X", j, i);
+            nce_write("X", j, i);
         }
-        swrite("SUPER", 0, i);
+        nce_write("SUPER", 0, i);
     }
 
     if (Keys['a']) {
